@@ -16,18 +16,23 @@ public class TextGraph {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        InitGraph g1 = new InitGraph();
-        g1.init();
-        Graph gg1 = g1.creategraph();
-        g1.showgraph(gg1);
+
+        Init ve = new Init();
+        ve.init("app doesn't work");
+        Graph g1 = new Graph();
+        ve.creatGraph(g1,ve.getVertexList(),ve.getEdgeList());
+        ve.showgraph(g1);
         
-        g1.init2();
-        Graph gg2 = g1.creategraph();
-        g1.showgraph(gg2);
+        ve.init("app doesn't open");
+        Graph g2 = new Graph();
+        ve.creatGraph(g2,ve.getVertexList(),ve.getEdgeList());
+        ve.showgraph(g2);
         
-        ComSubgraph com = new ComSubgraph();
-        com.ComSubgraph(gg1, gg2);
-        
+        ComSubgraph csg = new ComSubgraph();
+        csg.ComSubgraph(g1, g2);
+        Graph g = new Graph();
+        ve.creatGraph(g,csg.getVertexList(),csg.getEdgeList());
+        ve.showgraph(g);
     }
     
 }
