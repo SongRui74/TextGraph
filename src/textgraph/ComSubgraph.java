@@ -235,7 +235,8 @@ public class ComSubgraph{
         List<Vertex> vertexList = new LinkedList<>();
         for (Vertex v1 : vertexList1) {
             for (Vertex v2 : vertexList2) {
-                if (v1.getWord().equals(v2.getWord())) {
+                int level = this.level(v1, v2);
+                if (level == 1) {
                     vertexList.add(v1);
                 }
             }
@@ -254,12 +255,12 @@ public class ComSubgraph{
                 String start = v.word;
                 for (int i = 0; i < edgeList1.size(); i++) { //找到图1中的起始点
                     Edge e1 = (Edge) edgeList1.get(i);
-                    if (e1.from.endsWith(start)) {
+                    if (e1.from.word.endsWith(start)) {
                         for (int j = 0; j < edgeList2.size(); j++) { //找到图2中的起始点
                             Edge e2 = (Edge) edgeList2.get(i);
-                            if (e2.from.endsWith(start)) {
-                                if (e1.to.endsWith(e2.to)) {  //两个图的终止点相同
-                                    newedge.from = start; //将边加入子图中
+                            if (e2.from.word.endsWith(start)) {
+                                if (e1.to.word.endsWith(e2.to.word)) {  //两个图的终止点相同
+                                    newedge.from.word = start; //将边加入子图中
                                     newedge.to = e1.to;
                                     newedge.weight = e1.weight;
                                     edgeList.add(newedge);
@@ -273,4 +274,12 @@ public class ComSubgraph{
         this.setEdgeList(edgeList);
     }
     
+    public int level(Vertex v1,Vertex v2){
+        int level = 0;
+        if(v1.getWord().endsWith(v2.getWord()))
+            return 1;
+        else if(v1.getPos().endsWith(v2.getPos()))
+            return 2;
+        return level;
+    }
 }

@@ -17,6 +17,7 @@ class Vertex{
     String pos;
     String lemma;
     String ner;
+    Double wight = 0.0;
 
     public String getWord() {
         return word;
@@ -49,29 +50,45 @@ class Vertex{
     public void setNer(String ner) {
         this.ner = ner;
     }
-    
+
+    public Double getWight() {
+        return wight;
+    }
+
+    public void setWight(Double wight) {
+        this.wight = wight;
+    }
     
 }
 
 class Edge{
-    String from;
-    String to;
+    Vertex from;
+    Vertex to;
+    Double w = 0.0;
     String weight;
 
-    public String getFrom() {
+    public Vertex getFrom() {
         return from;
     }
 
-    public void setFrom(String from) {
+    public void setFrom(Vertex from) {
         this.from = from;
     }
 
-    public String getTo() {
+    public Vertex getTo() {
         return to;
     }
 
-    public void setTo(String to) {
+    public void setTo(Vertex to) {
         this.to = to;
+    }
+
+    public Double getW() {
+        return w;
+    }
+
+    public void setW(Double w) {
+        this.w = w;
     }
 
     public String getWeight() {
@@ -85,12 +102,13 @@ class Edge{
 }
     
 public class Graph {
- int VertexNum;//顶点数量
+    int VertexNum;//顶点数量
     int EdgeNum;   //边的数量
     List Vertexlist;
     List EdgeList;
     String[] Vertex; //保存顶点信息
-    String[][] EdgeWeight;//保存权
+    String[][] EdgeWeight;//保存语义权
+    Double[][] EdgeW;//保存权
 
     public int getVertexNum() {
         return VertexNum;
@@ -122,6 +140,14 @@ public class Graph {
 
     public void setEdgeWeight(String[][] EdgeWeight) {
         this.EdgeWeight = EdgeWeight;
+    }
+
+    public Double[][] getEdgeW() {
+        return EdgeW;
+    }
+
+    public void setEdgeW(Double[][] EdgeW) {
+        this.EdgeW = EdgeW;
     }
 
     public List getVertexlist() {
