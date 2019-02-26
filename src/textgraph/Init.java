@@ -35,15 +35,15 @@ import java.util.Properties;
 
 public class Init {
     
-    public List<String> vertexList;   //图的顶点集
+    public List<Vertex> vertexList;   //图的顶点集
     public List<Edge> edgeList;   //图的边集
     public List deplist;//依存关系列表
 
-    public List<String> getVertexList() {
+    public List<Vertex> getVertexList() {
         return vertexList;
     }
 
-    public void setVertexList(List<String> vertexList) {
+    public void setVertexList(List<Vertex> vertexList) {
         this.vertexList = vertexList;
     }
 
@@ -61,7 +61,7 @@ public class Init {
      */
     public void init(String str){  
         
-        List<String> vertexList = new LinkedList<>();
+        List<Vertex> vertexList = new LinkedList<>();
         List<Edge> edgeList = new LinkedList<>();
         //点集
         Properties props = new Properties();
@@ -76,8 +76,12 @@ public class Init {
         deplist = new ArrayList(); 
         for(CoreMap sentence: sentences) {
             for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
-                String word = token.get(TextAnnotation.class);
-                vertexList.add(word);
+                Vertex v = new Vertex();
+                v.word = token.get(TextAnnotation.class);
+                v.pos = token.get(PartOfSpeechAnnotation.class);
+                v.ner = token.get(NamedEntityTagAnnotation.class);
+                v.lemma = token.get(LemmaAnnotation.class);
+                vertexList.add(v);
             }
             SemanticGraph dependencies = sentence.get(SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation.class);
             deplist = dependencies.edgeListSorted(); //依存关系list
@@ -113,8 +117,9 @@ public class Init {
         
         //点集
         gm.Vertex = new String[gm.VertexNum]; //保存顶点信息
-        for(int i=0;i<gm.VertexNum;i++){
-            gm.Vertex[i]=(String) vertexList.get(i);//保存到顶点数组中
+        for (int i = 0; i < gm.VertexNum; i++) {
+            Vertex v = (Vertex) vertexList.get(i);
+            gm.Vertex[i] = v.getWord();//保存到顶点数组中
         }
         
         //边集

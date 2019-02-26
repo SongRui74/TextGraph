@@ -11,6 +11,48 @@ import java.util.List;
  *
  * @author HP
  */
+
+class Vertex{
+    String word;
+    String pos;
+    String lemma;
+    String ner;
+
+    public String getWord() {
+        return word;
+    }
+
+    public void setWord(String word) {
+        this.word = word;
+    }
+
+    public String getPos() {
+        return pos;
+    }
+
+    public void setPos(String pos) {
+        this.pos = pos;
+    }
+
+    public String getLemma() {
+        return lemma;
+    }
+
+    public void setLemma(String lemma) {
+        this.lemma = lemma;
+    }
+
+    public String getNer() {
+        return ner;
+    }
+
+    public void setNer(String ner) {
+        this.ner = ner;
+    }
+    
+    
+}
+
 class Edge{
     String from;
     String to;

@@ -162,12 +162,12 @@ import java.util.Map;
  */
 public class ComSubgraph{
     
-    public List vertexList1;   //图1的顶点集
+    public List<Vertex> vertexList1;   //图1的顶点集
     public List edgeList1;  //图1的每个顶点对应的有向边
-    public List vertexList2;   //图2的顶点集
+    public List<Vertex> vertexList2;   //图2的顶点集
     public List edgeList2;  //图2的每个顶点对应的有向边
     
-    public List vertexList;   //子图的顶点集
+    public List<Vertex> vertexList;   //子图的顶点集
     public List edgeList;  //子图的每个顶点对应的有向边
 
     public List getVertexList1() {
@@ -232,11 +232,11 @@ public class ComSubgraph{
     
     
     public void com_ver() {
-        List<String> vertexList = new LinkedList<>();
-        for (Object v1 : vertexList1) {
-            for (Object v2 : vertexList2) {
-                if (v1.equals(v2)) {
-                    vertexList.add((String) v1);
+        List<Vertex> vertexList = new LinkedList<>();
+        for (Vertex v1 : vertexList1) {
+            for (Vertex v2 : vertexList2) {
+                if (v1.getWord().equals(v2.getWord())) {
+                    vertexList.add(v1);
                 }
             }
         }
@@ -249,15 +249,17 @@ public class ComSubgraph{
         } else {
             List<Edge> edgeList = new LinkedList<>();
             Edge newedge = new Edge();
-            for (Object start : vertexList) { //从公共点集开始遍历
+            for (int k = 0;k < vertexList.size(); k++) { //从公共点集开始遍历
+                Vertex v = (Vertex) vertexList.get(k);
+                String start = v.word;
                 for (int i = 0; i < edgeList1.size(); i++) { //找到图1中的起始点
                     Edge e1 = (Edge) edgeList1.get(i);
-                    if (e1.from.endsWith((String) start)) {
+                    if (e1.from.endsWith(start)) {
                         for (int j = 0; j < edgeList2.size(); j++) { //找到图2中的起始点
                             Edge e2 = (Edge) edgeList2.get(i);
-                            if (e2.from.endsWith((String) start)) {
+                            if (e2.from.endsWith(start)) {
                                 if (e1.to.endsWith(e2.to)) {  //两个图的终止点相同
-                                    newedge.from = (String) start; //将边加入子图中
+                                    newedge.from = start; //将边加入子图中
                                     newedge.to = e1.to;
                                     newedge.weight = e1.weight;
                                     edgeList.add(newedge);
