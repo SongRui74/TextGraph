@@ -101,26 +101,28 @@ public class ComSubgraph{
                     int levelto = this.level(e1.to, e2.to);
                     //如果该边存在于子图
                     if (levelfrom != 0 && levelto != 0) {
-                        Edge edge = new Edge();      
-                        Vertex v = new Vertex();
+                        Edge edge = new Edge();  
+                        Vertex v1 = new Vertex();
+                        Vertex v2 = new Vertex();
                         //加入节点集
-                        v = e1.getFrom();                      
-                        if (levelfrom == 1) {                            
-                            vertexList.add(v);
+                        v1 = e1.getFrom();                      
+                        if (levelfrom == 1) {  
+                            vertexList.add(v1);
                         } else if (levelfrom == 2) {
-                            v.word = v.word+","+e2.getFrom().word+"/"+v.getPos();
-                            vertexList.add(v);
+                            v1.word = v1.word+","+e2.getFrom().word+"/"+v1.getPos();
+                            vertexList.add(v1);
                         }
-                        edge.setFrom(v);
+                        edge.setFrom(v1);
                         //加入节点集             
-                        v = e1.getTo();
+                        v2 = e1.getTo();
                         if (levelto == 1) {
-                            vertexList.add(v);
+                            vertexList.add(v2);
                         } else if (levelto == 2) {
-                            v.word = v.word+","+e2.getTo().word+"/"+v.getPos();
-                            vertexList.add(v);
+                            v2.word = v2.word+","+e2.getTo().word+"/"+v2.getPos();
+                            vertexList.add(v2);
                         }
-                        edge.setTo(v);                        
+                        edge.setTo(v2); 
+                        edge.setW(0.5*(v1.getWight()+v2.getWight()));
                         //加入边集
                         edge.setWeight(dep);
                         edgeList.add(edge);

@@ -120,6 +120,16 @@ public class Init {
             edge.to.setWord(dep);//to
             edge.to.setPos(deppos);
             edge.to.setLemma(deplem);
+            if (wordmap.get(edge.from.getWord()) == null) {
+                edge.from.wight = 0.0;
+            } else {
+                edge.from.wight = wordmap.get(edge.from.getWord());
+            }
+            if (wordmap.get(edge.to.getWord()) == null) {
+                edge.to.wight = 0.0;
+            } else {
+                edge.to.wight = wordmap.get(edge.to.getWord());
+            }
             edge.setW(0.5*(edge.from.wight + edge.to.wight));
 //            if(edge.from.wight == 0.0 || edge.to.wight == 0.0){
 //                edge.setW(0.0);
