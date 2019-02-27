@@ -33,11 +33,11 @@ public class TextGraph {
         ve.creatGraph(g2,ve.getVertexList(),ve.getEdgeList());
         ve.showgraph(g2);
         
-//        ComSubgraph csg = new ComSubgraph();
-//        csg.ComSubgraph(g1, g2);
-//        Graph g = new Graph();
-//        ve.creatGraph(g,csg.getVertexList(),csg.getEdgeList());
-//        ve.showgraph(g);
+        ComSubgraph csg = new ComSubgraph();
+        csg.ComSubgraph(g1, g2);
+        Graph g = new Graph();
+        ve.creatGraph(g,csg.getVertexList(),csg.getEdgeList());
+        ve.showgraph(g);
         
         //词
         Similarity sim = new Similarity();

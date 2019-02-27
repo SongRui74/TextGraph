@@ -5,7 +5,6 @@
  */
 package textgraph;
 
-import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
@@ -18,8 +17,6 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
 import edu.stanford.nlp.semgraph.SemanticGraphEdge;
-import edu.stanford.nlp.trees.Tree;
-import edu.stanford.nlp.trees.TreeCoreAnnotations;
 import edu.stanford.nlp.util.CoreMap;
 import java.io.BufferedReader;
 import java.io.File;
@@ -102,13 +99,15 @@ public class Init {
         }
         this.setVertexList(vertexList);
         
-        
-        
         //边集
         for(int i =0;i<deplist.size();i++){
             SemanticGraphEdge s = (SemanticGraphEdge) deplist.get(i);
             String dep = s.getDependent().word(); //dependent单词
             String gov = s.getGovernor().word();
+            String deppos = s.getDependent().tag();  //评论一的dependent词性
+            String deplem = s.getDependent().lemma(); //评论一dependent原形
+            String govpos = s.getGovernor().tag();
+            String govlem = s.getGovernor().lemma();
             String reln = s.getRelation().toString();  //dependent与governor关系
             
             Edge edge = new Edge();
@@ -116,20 +115,39 @@ public class Init {
             edge.to = new Vertex();
             
             edge.from.setWord(gov);//from
+            edge.from.setPos(govpos);
+            edge.from.setLemma(govlem);
             edge.to.setWord(dep);//to
-            if(edge.from.wight == 0.0 || edge.to.wight == 0.0){
-                edge.setW(0.0);
-            }else{
-                edge.w = edge.from.wight * edge.to.wight / Math.sqrt(edge.from.wight * edge.from.wight * edge.to.wight * edge.to.wight);
-            }
+            edge.to.setPos(deppos);
+            edge.to.setLemma(deplem);
+            edge.setW(0.5*(edge.from.wight + edge.to.wight));
+//            if(edge.from.wight == 0.0 || edge.to.wight == 0.0){
+//                edge.setW(0.0);
+//            }else{
+//                edge.w = edge.from.wight * edge.to.wight / Math.sqrt(edge.from.wight * edge.from.wight * edge.to.wight * edge.to.wight);
+//            }
             edge.weight = reln;//weight
             
             edgeList.add(edge);
         }
         this.setEdgeList(edgeList);
     }
-            
+        
+    public List removeDuplicate(List<Vertex> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            for (int j = list.size() - 1; j > i; j--) {
+                if (list.get(j).getWord().equals(list.get(i).getWord())) {
+                    list.remove(j);
+                }
+            }
+        }
+        return list;
+    }
+    
     public Graph creatGraph(Graph gm, List vertexList, List edgelist){
+        
+        vertexList = this.removeDuplicate(vertexList);
+        
         gm.setVertexNum(vertexList.size());
         gm.setEdgeList(edgelist);
         gm.setVertexlist(vertexList);
