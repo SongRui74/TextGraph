@@ -84,7 +84,84 @@ public class ComSubgraph{
 //        this.com_edge();
         this.com();
         
-    }    
+    }   
+    public void ComSubgraph2(Graph g1,Graph g2){
+        
+        this.setVertexList1(g1.getVertexlist());
+        this.setVertexList2(g2.getVertexlist());
+        this.setEdgeList1(g1.getEdgeList());
+        this.setEdgeList2(g2.getEdgeList());
+        
+        this.com_semantic();
+        
+    }
+    
+    public void com_semantic(){
+        List<Vertex> vertexList = new LinkedList<>();
+        List<Edge> edgeList = new LinkedList<>();
+        
+        for (int i = 0; i < edgeList1.size(); i++) {
+            Edge e1 = (Edge) edgeList1.get(i);
+            String dep = e1.getWeight();
+            for (int j = 0; j < edgeList2.size(); j++) {
+                Edge e2 = (Edge) edgeList2.get(j);
+                if (e2.getWeight().equals(dep)) {
+                    //边关系相同，判断节点相似等级
+                    int levelfrom = this.level(e1.from, e2.from);
+                    int levelto = this.level(e1.to, e2.to);
+                    //如果该边存在于子图
+                    if (levelfrom != 0 && levelto != 0) {
+                        Edge edge = new Edge();  
+                        Vertex v1 = new Vertex();
+                        Vertex v2 = new Vertex();
+                        Double d1 = 0.0;//语义权
+                        Double d2 = 0.0;//语义权
+                        //加入节点集
+                        v1 = e1.getFrom();                      
+                        if (levelfrom == 1) {  
+                            d1 = 1.0;
+                            vertexList.add(v1);
+                        } else if (levelfrom == 2) {
+                            d1 = 0.5;
+                            v1.word = v1.word+","+e2.getFrom().word+"/"+v1.getPos();
+                            vertexList.add(v1);
+                        }
+                        edge.setFrom(v1);
+                        //加入节点集             
+                        v2 = e1.getTo();
+                        if (levelto == 1) {
+                            d2 = 1.0;
+                            vertexList.add(v2);
+                        } else if (levelto == 2) {
+                            d2 = 0.5;
+                            v2.word = v2.word+","+e2.getTo().word+"/"+v2.getPos();
+                            vertexList.add(v2);
+                        }
+                        edge.setTo(v2); 
+                        //加入边集
+                        edge.setWeight(dep);
+                        double d = 0.5*(d1+d2); //语义权
+                        if (v1.getWight() == 0.0 || v2.getWight() == 0.0) {
+                            if(d != 0.0){
+                                edge.setW(d);
+                                e1.setW(e1.getW()+d); //同时改变原图的语义值
+                                e2.setW(e2.getW()+d);
+                            }else{
+                                edge.setW(0.0);
+                            }                            
+                        } else {
+                            e1.setW(e1.getW()+d); //同时改变原图的语义值
+                            e2.setW(e2.getW()+d);
+                            edge.setW(d+v1.getWight()*v2.getWight()/Math.sqrt(v1.getWight()*v1.getWight()*v2.getWight()*v2.getWight()));
+                        }
+                        edgeList.add(edge);
+                    }
+                }
+            }
+        }
+        this.setVertexList(vertexList);
+        this.setEdgeList(edgeList);
+    }
     
     public void com(){
         List<Vertex> vertexList = new LinkedList<>();
@@ -122,7 +199,6 @@ public class ComSubgraph{
                             vertexList.add(v2);
                         }
                         edge.setTo(v2); 
-                        edge.setW(0.5*(v1.getWight()+v2.getWight()));
                         //加入边集
                         edge.setWeight(dep);
                         if (v1.getWight() == 0.0 || v2.getWight() == 0.0) {
@@ -139,48 +215,48 @@ public class ComSubgraph{
         this.setEdgeList(edgeList);
     }
     
-    public void com_ver() {
-        List<Vertex> vertexList = new LinkedList<>();
-        for (Vertex v1 : vertexList1) {
-            for (Vertex v2 : vertexList2) {
-                int level = this.level(v1, v2);
-                if (level == 1) {
-                    vertexList.add(v1);
-                }
-            }
-        }
-        this.setVertexList(vertexList);
-    }
-    
-    public void com_edge() {
-        if (vertexList.isEmpty()) {
-            System.out.println("There is no common subgraph!");
-        } else {
-            List<Edge> edgeList = new LinkedList<>();
-            Edge newedge = new Edge();
-            for (int k = 0;k < vertexList.size(); k++) { //从公共点集开始遍历
-                Vertex v = (Vertex) vertexList.get(k);
-                String start = v.word;
-                for (int i = 0; i < edgeList1.size(); i++) { //找到图1中的起始点
-                    Edge e1 = (Edge) edgeList1.get(i);
-                    if (e1.from.word.endsWith(start)) {
-                        for (int j = 0; j < edgeList2.size(); j++) { //找到图2中的起始点
-                            Edge e2 = (Edge) edgeList2.get(j);
-                            if (e2.from.word.endsWith(start)) {
-                                if (e1.to.word.endsWith(e2.to.word)) {  //两个图的终止点相同
-                                    newedge.from.word = start; //将边加入子图中
-                                    newedge.to = e1.to;
-                                    newedge.weight = e1.weight;
-                                    edgeList.add(newedge);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        this.setEdgeList(edgeList);
-    }
+//    public void com_ver() {
+//        List<Vertex> vertexList = new LinkedList<>();
+//        for (Vertex v1 : vertexList1) {
+//            for (Vertex v2 : vertexList2) {
+//                int level = this.level(v1, v2);
+//                if (level == 1) {
+//                    vertexList.add(v1);
+//                }
+//            }
+//        }
+//        this.setVertexList(vertexList);
+//    }
+//    
+//    public void com_edge() {
+//        if (vertexList.isEmpty()) {
+//            System.out.println("There is no common subgraph!");
+//        } else {
+//            List<Edge> edgeList = new LinkedList<>();
+//            Edge newedge = new Edge();
+//            for (int k = 0;k < vertexList.size(); k++) { //从公共点集开始遍历
+//                Vertex v = (Vertex) vertexList.get(k);
+//                String start = v.word;
+//                for (int i = 0; i < edgeList1.size(); i++) { //找到图1中的起始点
+//                    Edge e1 = (Edge) edgeList1.get(i);
+//                    if (e1.from.word.endsWith(start)) {
+//                        for (int j = 0; j < edgeList2.size(); j++) { //找到图2中的起始点
+//                            Edge e2 = (Edge) edgeList2.get(j);
+//                            if (e2.from.word.endsWith(start)) {
+//                                if (e1.to.word.endsWith(e2.to.word)) {  //两个图的终止点相同
+//                                    newedge.from.word = start; //将边加入子图中
+//                                    newedge.to = e1.to;
+//                                    newedge.weight = e1.weight;
+//                                    edgeList.add(newedge);
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        this.setEdgeList(edgeList);
+//    }
     
     public int level(Vertex v1,Vertex v2){
         int level = 0;

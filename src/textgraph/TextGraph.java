@@ -38,12 +38,17 @@ public class TextGraph {
         Graph g = new Graph();
         ve.creatGraph(g,csg.getVertexList(),csg.getEdgeList());
         ve.showgraph(g);
+        System.out.println("图结构相似度（仅词汇）："+ve.sim(g, g1, g2));
         
-        ve.sim(g, g1, g2);
+        csg.ComSubgraph2(g1, g2);
+        Graph gg = new Graph();
+        ve.creatGraph(gg,csg.getVertexList(),csg.getEdgeList());
+        ve.showgraph(gg);
+        System.out.println("图结构相似度（含语义）："+ve.sim(gg, g1, g2));
         
         //词
         Similarity sim = new Similarity();
-        System.out.println(sim.Similarity(a, b));
+        System.out.println("词向量相似度："+sim.Similarity(a, b));
     }
     
 }

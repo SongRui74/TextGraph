@@ -248,9 +248,10 @@ public class Init {
         }
     }
     
+    //公共子图相似性
     public double sim(Graph gm, Graph g1, Graph g2) {
         Double sim = 0.0;
-        Double a = 0.8;//参数
+        Double a = 0.6;//参数
         //点相似
         Double v = a * gm.getVertexNum() / Math.max(g1.getVertexNum(), g2.getVertexNum());
         //权相似
@@ -271,8 +272,8 @@ public class Init {
         }
         Double w = (1 - a) * ew / Math.max(ew1, ew2);
         sim = v + w;
-        System.out.println(sim);
-
+    //    System.out.println(w);
+    //    System.out.println(sim);
         return sim;
     }
 }

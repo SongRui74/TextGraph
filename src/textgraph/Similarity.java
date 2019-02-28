@@ -21,6 +21,7 @@ import java.util.Set;
  *
  * @author HP
  */
+//词向量相似度
 public class Similarity {
     
     public Double Similarity(String a, String b) throws IOException{
