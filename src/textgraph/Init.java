@@ -130,12 +130,12 @@ public class Init {
             } else {
                 edge.to.wight = wordmap.get(edge.to.getWord());
             }
-            edge.setW(0.5*(edge.from.wight + edge.to.wight));
-//            if(edge.from.wight == 0.0 || edge.to.wight == 0.0){
-//                edge.setW(0.0);
-//            }else{
-//                edge.w = edge.from.wight * edge.to.wight / Math.sqrt(edge.from.wight * edge.from.wight * edge.to.wight * edge.to.wight);
-//            }
+        //    edge.setW(0.5*(edge.from.wight + edge.to.wight));
+            if(edge.from.wight == 0.0 || edge.to.wight == 0.0){
+                edge.setW(0.0);
+            }else{
+                edge.w = edge.from.wight * edge.to.wight / Math.sqrt(edge.from.wight * edge.from.wight * edge.to.wight * edge.to.wight);
+            }
             edge.weight = reln;//weight
             
             edgeList.add(edge);
@@ -159,6 +159,7 @@ public class Init {
         vertexList = this.removeDuplicate(vertexList);
         
         gm.setVertexNum(vertexList.size());
+        gm.setEdgeNum(edgelist.size());
         gm.setEdgeList(edgelist);
         gm.setVertexlist(vertexList);
         
@@ -245,5 +246,33 @@ public class Init {
             wordmap.put(word, weight);
             temp = br.readLine();
         }
+    }
+    
+    public double sim(Graph gm, Graph g1, Graph g2) {
+        Double sim = 0.0;
+        Double a = 0.8;//参数
+        //点相似
+        Double v = a * gm.getVertexNum() / Math.max(g1.getVertexNum(), g2.getVertexNum());
+        //权相似
+        Double ew = 0.0;
+        Double ew1 = 0.0;
+        Double ew2 = 0.0;
+        for (int i = 0; i < gm.getEdgeNum(); i++) {
+            Edge e = (Edge) gm.getEdgeList().get(i);
+            ew += e.getW();
+        }
+        for (int i = 0; i < g1.getEdgeNum(); i++) {
+            Edge e = (Edge) g1.getEdgeList().get(i);
+            ew1 += e.getW();
+        }
+        for (int i = 0; i < g2.getEdgeNum(); i++) {
+            Edge e = (Edge) g2.getEdgeList().get(i);
+            ew2 += e.getW();
+        }
+        Double w = (1 - a) * ew / Math.max(ew1, ew2);
+        sim = v + w;
+        System.out.println(sim);
+
+        return sim;
     }
 }

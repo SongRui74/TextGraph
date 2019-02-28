@@ -125,6 +125,11 @@ public class ComSubgraph{
                         edge.setW(0.5*(v1.getWight()+v2.getWight()));
                         //加入边集
                         edge.setWeight(dep);
+                        if (v1.getWight() == 0.0 || v2.getWight() == 0.0) {
+                            edge.setW(0.0);
+                        } else {
+                            edge.setW(v1.getWight()*v2.getWight()/Math.sqrt(v1.getWight()*v1.getWight()*v2.getWight()*v2.getWight()));
+                        }
                         edgeList.add(edge);
                     }
                 }

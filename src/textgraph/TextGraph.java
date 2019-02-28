@@ -39,6 +39,8 @@ public class TextGraph {
         ve.creatGraph(g,csg.getVertexList(),csg.getEdgeList());
         ve.showgraph(g);
         
+        ve.sim(g, g1, g2);
+        
         //词
         Similarity sim = new Similarity();
         System.out.println(sim.Similarity(a, b));
