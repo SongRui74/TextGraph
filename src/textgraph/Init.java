@@ -5,6 +5,7 @@
  */
 package textgraph;
 
+import com.ansj.vec.Word2VEC;
 import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
@@ -38,6 +39,7 @@ import java.util.Properties;
 public class Init {
     
     Map<String,Double> wordmap = new HashMap();
+    Word2VEC w2v = new Word2VEC();
     
     public List<Vertex> vertexList;   //图的顶点集
     public List<Edge> edgeList;   //图的边集
@@ -63,8 +65,10 @@ public class Init {
      * 利用Standfordnlp分析用户评论,得到依存关系
      * @param str 一条用户评论
      */
-    public void init(String str){  
+    public void init(String str) throws IOException{  
                 
+        w2v.loadJavaModel(".\\test10000_model");
+        
         List<Vertex> vertexList = new LinkedList<>();
         List<Edge> edgeList = new LinkedList<>();
         //点集
@@ -94,7 +98,7 @@ public class Init {
             }
             SemanticGraph dependencies = sentence.get(SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation.class);
             deplist = dependencies.edgeListSorted(); //依存关系list
-            System.out.println(dependencies.toString());
+//            System.out.println(dependencies.toString());
             break;//只取第一条评论内容，防止存在省略号覆盖list
         }
         this.setVertexList(vertexList);
@@ -130,12 +134,8 @@ public class Init {
             } else {
                 edge.to.wight = wordmap.get(edge.to.getWord());
             }
-        //    edge.setW(0.5*(edge.from.wight + edge.to.wight));
-            if(edge.from.wight == 0.0 || edge.to.wight == 0.0){
-                edge.setW(0.0);
-            }else{
-                edge.w = edge.from.wight * edge.to.wight / Math.sqrt(edge.from.wight * edge.from.wight * edge.to.wight * edge.to.wight);
-            }
+//            edge.setW(0.5*(edge.from.wight + edge.to.wight));
+            edge.setW(w2v.similarity(gov, dep)+0.5*(edge.from.wight + edge.to.wight));
             edge.weight = reln;//weight
             
             edgeList.add(edge);
@@ -156,56 +156,61 @@ public class Init {
     
     public Graph creatGraph(Graph gm, List vertexList, List edgelist){
         
-        vertexList = this.removeDuplicate(vertexList);
-        
-        gm.setVertexNum(vertexList.size());
-        gm.setEdgeNum(edgelist.size());
-        gm.setEdgeList(edgelist);
-        gm.setVertexlist(vertexList);
-        
-        String weight;         //权
-        Double w;   //词权
-        Vertex startV,endV;   //起始，终止顶点
-        
-        //点集
-        gm.Vertex = new String[gm.VertexNum]; //保存顶点信息
-        for (int i = 0; i < gm.VertexNum; i++) {
-            Vertex v = (Vertex) vertexList.get(i);
-            gm.Vertex[i] = v.getWord();//保存到顶点数组中
-        }
-        
-        //边集
-        gm.EdgeWeight = new String[gm.VertexNum][gm.VertexNum];
-        gm.EdgeW = new Double[gm.VertexNum][gm.VertexNum];
-        if (edgelist == null) {
-            for (int i = 0; i < vertexList.size(); i++) {
-                for (int j = 0; j < vertexList.size(); j++) {
-                    gm.EdgeWeight[i][j] = null;
-                }
-            }
+        if (vertexList.isEmpty()) {
+            gm = new Graph(0, 0);
+            return gm;
         } else {
-            for (int i = 0; i < edgelist.size(); i++) {
-                Edge s = (Edge) edgelist.get(i);
-                startV = s.from;
-                endV = s.to;
-                w = s.getW();
-                weight = s.weight;
+            vertexList = this.removeDuplicate(vertexList);
 
-                for (int j = 0; j < gm.VertexNum; j++) //在顶点数组中查找起点位置
-                {
-                    if (gm.Vertex[j].endsWith(startV.getWord())) {
-                        for (int k = 0; k < gm.VertexNum; k++) //在顶点数组中查找终点位置
-                        {
-                            if (gm.Vertex[k].endsWith(endV.getWord())) {
-                                gm.EdgeW[j][k] = w;
-                                gm.EdgeWeight[j][k] = weight;
+            gm.setVertexNum(vertexList.size());
+            gm.setEdgeNum(edgelist.size());
+            gm.setEdgeList(edgelist);
+            gm.setVertexlist(vertexList);
+
+            String weight;         //权
+            Double w;   //词权
+            Vertex startV, endV;   //起始，终止顶点
+
+            //点集
+            gm.Vertex = new String[gm.VertexNum]; //保存顶点信息
+            for (int i = 0; i < gm.VertexNum; i++) {
+                Vertex v = (Vertex) vertexList.get(i);
+                gm.Vertex[i] = v.getWord();//保存到顶点数组中
+            }
+
+            //边集
+            gm.EdgeWeight = new String[gm.VertexNum][gm.VertexNum];
+            gm.EdgeW = new Double[gm.VertexNum][gm.VertexNum];
+            if (edgelist == null) {
+                for (int i = 0; i < vertexList.size(); i++) {
+                    for (int j = 0; j < vertexList.size(); j++) {
+                        gm.EdgeWeight[i][j] = null;
+                    }
+                }
+            } else {
+                for (int i = 0; i < edgelist.size(); i++) {
+                    Edge s = (Edge) edgelist.get(i);
+                    startV = s.from;
+                    endV = s.to;
+                    w = s.getW();
+                    weight = s.weight;
+
+                    for (int j = 0; j < gm.VertexNum; j++) //在顶点数组中查找起点位置
+                    {
+                        if (gm.Vertex[j].endsWith(startV.getWord())) {
+                            for (int k = 0; k < gm.VertexNum; k++) //在顶点数组中查找终点位置
+                            {
+                                if (gm.Vertex[k].endsWith(endV.getWord())) {
+                                    gm.EdgeW[j][k] = w;
+                                    gm.EdgeWeight[j][k] = weight;
+                                }
                             }
                         }
                     }
                 }
             }
+            return gm;
         }
-        return gm;
     }
     
     public void showgraph(Graph gm){
@@ -249,31 +254,39 @@ public class Init {
     }
     
     //公共子图相似性
-    public double sim(Graph gm, Graph g1, Graph g2) {
+    public double sim(Graph gm, Graph g1, Graph g2) {       
         Double sim = 0.0;
-        Double a = 0.6;//参数
-        //点相似
-        Double v = a * gm.getVertexNum() / Math.max(g1.getVertexNum(), g2.getVertexNum());
-        //权相似
-        Double ew = 0.0;
-        Double ew1 = 0.0;
-        Double ew2 = 0.0;
-        for (int i = 0; i < gm.getEdgeNum(); i++) {
-            Edge e = (Edge) gm.getEdgeList().get(i);
-            ew += e.getW();
+        if (gm.getVertexNum() == 0) {
+            return sim = 0.0;
+        } else if (gm.getVertexNum() == 1) {
+            return sim = 1.0 * gm.getVertexNum() / Math.max(g1.getVertexNum(), g2.getVertexNum());
+        } else {
+//        Double a = 0.4;//参数
+//        //点相似
+//        Double v = a * gm.getVertexNum() / Math.max(g1.getVertexNum(), g2.getVertexNum());
+//        //边相似
+//        Double edge = a * gm.getEdgeNum() / Math.max(g1.getEdgeNum(), g2.getEdgeNum());
+            //权相似
+            Double ew = 0.0;
+            Double ew1 = 0.0;
+            Double ew2 = 0.0;
+            for (int i = 0; i < gm.getEdgeNum(); i++) {
+                Edge e = (Edge) gm.getEdgeList().get(i);
+                ew += e.getW();
+            }
+            for (int i = 0; i < g1.getEdgeNum(); i++) {
+                Edge e = (Edge) g1.getEdgeList().get(i);
+                ew1 += e.getW();
+            }
+            for (int i = 0; i < g2.getEdgeNum(); i++) {
+                Edge e = (Edge) g2.getEdgeList().get(i);
+                ew2 += e.getW();
+            }
+//        Double w = (1 - a) * ew / Math.max(ew1, ew2);
+//        sim = v +w;
+            Double w = ew / Math.max(ew1, ew2);
+            sim = w;
+            return sim;
         }
-        for (int i = 0; i < g1.getEdgeNum(); i++) {
-            Edge e = (Edge) g1.getEdgeList().get(i);
-            ew1 += e.getW();
-        }
-        for (int i = 0; i < g2.getEdgeNum(); i++) {
-            Edge e = (Edge) g2.getEdgeList().get(i);
-            ew2 += e.getW();
-        }
-        Double w = (1 - a) * ew / Math.max(ew1, ew2);
-        sim = v + w;
-    //    System.out.println(w);
-    //    System.out.println(sim);
-        return sim;
     }
 }

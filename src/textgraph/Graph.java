@@ -110,6 +110,21 @@ public class Graph {
     String[][] EdgeWeight;//保存语义权
     Double[][] EdgeW;//保存权
 
+    public Graph() {
+        this.VertexNum = VertexNum;
+        this.EdgeNum = EdgeNum;
+        this.Vertexlist = Vertexlist;
+        this.EdgeList = EdgeList;
+        this.Vertex = Vertex;
+        this.EdgeWeight = EdgeWeight;
+        this.EdgeW = EdgeW;
+    }
+
+    public Graph(int VertexNum, int EdgeNum) {
+        this.VertexNum = VertexNum;
+        this.EdgeNum = EdgeNum;
+    }
+    
     public int getVertexNum() {
         return VertexNum;
     }
